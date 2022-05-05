@@ -11,8 +11,8 @@ const Rect = ({ column = 0, row = 0, alive }: RectProps) => {
 
   return (
     <div style={{
-      backgroundColor: `${alive ? 'black' : 'white'}`, position: 'absolute', top: `${((row + 1) * 50)}px`, left: `${((column + 1) * 50)}px`
-      , width: '50px', height: '50px', border: '0.2px solid #000'
+      backgroundColor: `${alive ? 'black' : 'white'}`, position: 'absolute', top: `${((row + 1) * 20)}px`, left: `${((column + 1) * 20)}px`
+      , width: '20px', height: '20px', border: '0.2px solid #000'
     }}>
 
     </div>
