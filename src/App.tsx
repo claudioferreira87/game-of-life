@@ -1,10 +1,10 @@
 import './App.css'
-import Upload from './components/Upload'
+import Game from './components/Game'
 
 function App() {
 
   return (
-    <Upload />
+    <Game />
   )
 }
 

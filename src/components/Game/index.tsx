@@ -7,12 +7,11 @@ interface matrixData {
 
 let timerID = 0;
 
-const Upload = () => {
+const Game = () => {
   const [initialState, setInitialState] = useState<string | null>(null);
   const [generation, setGeneration] = useState<number>(0);
   const [matrix, setMatrix] = useState<matrixData[][]>();
   const [data, setData] = useState<string[] | undefined>(undefined)
-  let toogleCheck = true;
 
   useEffect(() => {
     setData(initialState?.split('-'));
@@ -37,8 +36,9 @@ const Upload = () => {
       if (verify?.length === 3
         && !isNaN(Number(verify[0]))
         && !isNaN(Number(verify[1]))
-        && !isNaN(Number(verify[2]))) {
-        setInitialState(text)
+        && !isNaN(Number(verify[2]))
+        && (Number(verify[0]) <= Number(verify[1]) * Number(verify[2]))) {
+        setInitialState(text);
 
       } else {
         alert('File is not valid')
@@ -62,6 +62,7 @@ const Upload = () => {
       (data) {
       /**
        * * draw the grid with the matrix
+       * * where data[1] = row and data[2] = column
        */
       for (let i = 0; i < Number(data[1]); i++) {
         let subGrid = [];
@@ -73,11 +74,18 @@ const Upload = () => {
 
       /**
        * * randomly choose where the living cells will be
+       * * for each
        */
       for (let i = 0; i < Number(data[0]); i++) {
-        const randomRow = Math.floor(Math.random() * grid.length);
-        const randomColum = Math.floor(Math.random() * grid[0].length);
-        grid[randomRow][randomColum].alive = true;
+        let isGenerateNewRandom = true;
+        while (isGenerateNewRandom) {
+          const randomRow = Math.floor(Math.random() * grid.length);
+          const randomColumn = Math.floor(Math.random() * grid[0].length);
+          if (!grid[randomRow][randomColumn].alive) {
+            grid[randomRow][randomColumn].alive = true;
+            isGenerateNewRandom = false;
+          }
+        }
       }
       setGeneration(Number(data[0]));
       setMatrix(grid);
@@ -88,7 +96,7 @@ const Upload = () => {
   /**
    * * the game starts and I check each RECT component and if it has neighbors
    * * with the correct row and column values I do the round in each neighbor
-   * * if I find a neighbor I add it to the counter
+   * * if I find a neighbor alive I add it to the counter
    */
 
   const start = () => {
@@ -98,83 +106,49 @@ const Upload = () => {
       const colsLength = matrix[0].length - 1;
       const matrixTemp = [...matrix];
 
-      if (toogleCheck) {
-        matrixTemp.map((rows) => rows.map((item) => {
-          let neighbors = 0;
-          //1 to left
-          if (item.col > 0 && matrixTemp[item.row][item.col - 1].alive)
-            neighbors++;
-          //1 to left above
-          if (item.col > 0 && item.row > 0 && matrixTemp[item.row - 1][item.col - 1].alive)
-            neighbors++;
-          //1 above
-          if (item.row > 0 && matrixTemp[item.row - 1][item.col].alive)
-            neighbors++;
-          //1 to right above
-          if (item.row > 0 && item.col < colsLength && matrixTemp[item.row - 1][item.col + 1].alive)
-            neighbors++;
-          //1 to right
-          if (item.col < colsLength && matrixTemp[item.row][item.col + 1].alive)
-            neighbors++;
-          //1 to right below
-          if (item.col < colsLength && item.row < rowsLength && matrixTemp[item.row + 1][item.col + 1].alive)
-            neighbors++;
-          //1 below
-          if (item.row < rowsLength && matrixTemp[item.row + 1][item.col].alive)
-            neighbors++;
-          //1 to left below
-          if (item.row < rowsLength && item.col > 0 && matrixTemp[item.row + 1][item.col - 1].alive)
-            neighbors++;
+      matrixTemp.map((rows) => rows.map((item) => {
+        let neighbors = 0;
+        //1 to left
+        if (item.col > 0 && matrixTemp[item.row][item.col - 1].alive)
+          neighbors++;
+        //1 to left above
+        if (item.col > 0 && item.row > 0 && matrixTemp[item.row - 1][item.col - 1].alive)
+          neighbors++;
+        //1 above
+        if (item.row > 0 && matrixTemp[item.row - 1][item.col].alive)
+          neighbors++;
+        //1 to right above
+        if (item.row > 0 && item.col < colsLength && matrixTemp[item.row - 1][item.col + 1].alive)
+          neighbors++;
+        //1 to right
+        if (item.col < colsLength && matrixTemp[item.row][item.col + 1].alive)
+          neighbors++;
+        //1 to right below
+        if (item.col < colsLength && item.row < rowsLength && matrixTemp[item.row + 1][item.col + 1].alive)
+          neighbors++;
+        //1 below
+        if (item.row < rowsLength && matrixTemp[item.row + 1][item.col].alive)
+          neighbors++;
+        //1 to left below
+        if (item.row < rowsLength && item.col > 0 && matrixTemp[item.row + 1][item.col - 1].alive)
+          neighbors++;
 
-          if (neighbors === 3)
-            matrixTemp[item.row][item.col].alive = true;
-        }));
-        toogleCheck = false;
-      }
-      else {
-        matrixTemp.map((rows) => rows.map((item) => {
-          let neighbors = 0;
-          //1 to left
-          if (item.col > 0 && matrixTemp[item.row][item.col - 1].alive)
-            neighbors++;
-          //1 to left above
-          if (item.col > 0 && item.row > 0 && matrixTemp[item.row - 1][item.col - 1].alive)
-            neighbors++;
-          //1 above
-          if (item.row > 0 && matrixTemp[item.row - 1][item.col].alive)
-            neighbors++;
-          //1 to right above
-          if (item.row > 0 && item.col < colsLength && matrixTemp[item.row - 1][item.col + 1].alive)
-            neighbors++;
-          //1 to right
-          if (item.col < colsLength && matrixTemp[item.row][item.col + 1].alive)
-            neighbors++;
-          //1 to right below
-          if (item.col < colsLength && item.row < rowsLength && matrixTemp[item.row + 1][item.col + 1].alive)
-            neighbors++;
-          //1 below
-          if (item.row < rowsLength && matrixTemp[item.row + 1][item.col].alive)
-            neighbors++;
-          //1 to left below
-          if (item.row < rowsLength && item.col > 0 && matrixTemp[item.row + 1][item.col - 1].alive)
-            neighbors++;
+        /**
+         *
+         * * after that I can tell who stays alive or who becomes alive for the next generation
+         */
 
-          /**
-           * * toggleCheck serves to validate the living and after the dead
-           * * after that I can tell who stays alive or who becomes alive for the next generation
-           */
-
-          if (neighbors > 3 || neighbors < 2)
-            matrixTemp[item.row][item.col].alive = false;
-        }));
-        toogleCheck = true;
-        setGeneration(prev => prev + 1);
-      }
+        if (neighbors > 3 || neighbors < 2)
+          matrixTemp[item.row][item.col].alive = false;
+        else if (neighbors === 3 && matrixTemp[item.row][item.col].alive === false)
+          matrixTemp[item.row][item.col].alive = true;
+      }))
+      // toogleCheck = true;
+      setGeneration(prev => prev + 1);
+      // }
       setMatrix(matrixTemp);
     }
   }
-
-
 
   return (
     <>
@@ -196,7 +170,7 @@ const Upload = () => {
                   className={`${timerID !== 0 ? 'bg-red-800' : 'bg-blue-800'} text-zinc-50 font-bold py-8 px-8 rounded-full`}
                   onClick={createGame}>{timerID !== 0 ? 'RESET' : 'SET'}
                 </button>
-                <button disabled={timerID > 0} onClick={() => { timerID = setInterval(() => start(), 1000); }}
+                <button disabled={timerID > 0} onClick={() => { timerID = setInterval(() => start(), 1500); }}
                   className='bg-blue-800 text-zinc-50 font-bold py-8 px-8 rounded-full'
                 >GO!
                 </button>
@@ -208,7 +182,7 @@ const Upload = () => {
           )
       }
 
-      <div className='absolute top-32 left-1/3'>
+      <div className='absolute top-32 left-1/2'>
         {
           matrix?.map((rows) => rows.map((col, i) => (
             <div key={i}>
@@ -222,4 +196,4 @@ const Upload = () => {
   )
 }
 
-export default Upload
+export default Game;
